@@ -1,36 +1,84 @@
-# 🪷 KolamAI — Canvas Coders · SIH 2025
+<div align="center">
 
-> **PS-25107** · Heritage & Culture · Software  
-> Develop computer programs to identify design principles behind Kolam designs and recreate them.
+<img src="assets/kolam_demo.gif" alt="KolamAI Demo" width="100%">
+
+# 🪷 KolamAI
+
+### AI-Powered Kolam Pattern Analysis & Recreation
+
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.17-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://tensorflow.org)
+[![Flask](https://img.shields.io/badge/Flask-3.0-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com)
+[![EfficientNet](https://img.shields.io/badge/EfficientNetB3-Pretrained-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://keras.io/api/applications/efficientnet/)
+
+*Decode the sacred geometry of South Indian Kolam art using deep learning*
+
+</div>
 
 ---
 
-## 🎯 What is KolamAI?
+## ✨ What is KolamAI?
 
-KolamAI is a Python + web toolkit that:
-- **Analyzes** Kolam images using OpenCV to extract symmetry, dot grids, and line patterns
-- **Classifies** Kolam type (Pulli / Sikku / Kambi / Freeform) with 99.5% accuracy
-- **Recreates** Kolams digitally based on inferred design principles
-- **Generates** new Kolam variations inspired by the learned patterns
+Kolam is a sacred South Indian art form — intricate patterns drawn using rice powder at doorsteps, rich in mathematical symmetry and cultural symbolism. KolamAI is a deep learning system that:
 
-Built on a custom dataset of **6,000+ hand-curated and annotated Kolam images** — our own intellectual property.
+- 🔍 **Analyzes** uploaded Kolam images — symmetry, dot grids, line patterns, complexity
+- 🧠 **Classifies** the Kolam type using a fine-tuned EfficientNetB3 model
+- 🎨 **Recreates** Kolams digitally based on inferred design principles
+- ✨ **Generates** new Kolam variations inspired by learned patterns
 
 ---
 
-## 🏗 Project Structure
+## 📸 Screenshots
+
+<div align="center">
+<img src="assets/SS_1.jpeg" width="49%"> <img src="assets/SS_2.jpeg" width="49%">
+<img src="assets/SS_3.jpeg" width="49%"> <img src="assets/SS_4.jpeg" width="49%">
+</div>
+
+---
+
+## 🧠 Model
+
+Built on **EfficientNetB3** pretrained on ImageNet, fine-tuned on our custom dataset of **5,631 hand-curated and annotated Kolam images** across 6 classes.
+
+| Class | Images |
+|-------|--------|
+| Dot Grid | 1,000 |
+| Flower Motif | 1,021 |
+| Geometric | 1,010 |
+| Sikku Pattern | 600 |
+| Spiral Design | 1,000 |
+| Star Pattern | 1,000 |
+
+**Training strategy:**
+- Phase 1 — Head training with frozen EfficientNetB3 base
+- Phase 2 — Fine-tuning top 30 layers with low learning rate (2e-5)
+- EfficientNet-native `preprocess_input` (key fix for correct feature extraction)
+- Stratified 80/20 train-val split with class weights for imbalance handling
+
+---
+
+## 🏗️ Project Structure
 
 ```
-kolam-project/
+KolamAI/
 ├── backend/
-│   ├── app.py              # Flask API (analysis, recreation, generation)
-│   └── requirements.txt    # Python dependencies
+│   ├── app.py              # Flask REST API
+│   ├── train.py            # Model training script
+│   ├── kolam_model.keras   # Trained model (not in repo — see Releases)
+│   └── requirements.txt
 ├── frontend/
-│   └── index.html          # Single-file React-free UI (zero build step)
-├── dataset/                # Place your 6000+ images here
-│   ├── pulli/
-│   ├── sikku/
-│   ├── kambi/
-│   └── freeform/
+│   └── index.html          # Single-file UI
+├── dataset/                # Place dataset here (not in repo)
+│   ├── Dot_Grid/
+│   ├── Flower_Motif/
+│   ├── Geometric/
+│   ├── Sikku_Pattern/
+│   ├── Spiral_Design/
+│   └── Star_Pattern/
+├── assets/                 # Demo GIF and screenshots
+├── docker-compose.yml
+├── .gitignore
 └── README.md
 ```
 
@@ -38,20 +86,33 @@ kolam-project/
 
 ## 🚀 Quick Start
 
-### Backend (Flask)
-
+### 1. Clone the repo
 ```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-# API runs at http://localhost:5000
+git clone https://github.com/Tanviiii17/KolamAI.git
+cd KolamAI
 ```
 
-### Frontend
-
+### 2. Set up backend
 ```bash
-cd frontend
-# Just open index.html in any browser, OR serve it:
+cd backend
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # Mac/Linux
+pip install -r requirements.txt
+```
+
+### 3. Add the trained model
+Download `kolam_model.keras` from the [Releases](https://github.com/Tanviiii17/KolamAI/releases) page and place it in `backend/`.
+
+### 4. Run the backend
+```bash
+python app.py
+# API running at http://localhost:5000
+```
+
+### 5. Run the frontend
+```bash
+cd ../frontend
 python -m http.server 3000
 # Visit http://localhost:3000
 ```
@@ -62,78 +123,32 @@ python -m http.server 3000
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/health` | Health check |
-| POST | `/api/analyze` | Analyze uploaded Kolam image (base64) |
-| POST | `/api/recreate` | Recreate Kolam by style + grid |
-| POST | `/api/generate` | Generate variations from pattern type |
-| GET | `/api/dataset/stats` | Dataset statistics |
-
-### Example: Analyze
-
-```bash
-curl -X POST http://localhost:5000/api/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"image": "data:image/png;base64,<BASE64_STRING>"}'
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "pattern_type": "Pulli Kolam",
-  "symmetry": { "horizontal": 87.3, "vertical": 91.2, "overall": 87.3 },
-  "dot_count": 49,
-  "line_count": 38,
-  "inferred_grid": 7,
-  "design_principles": ["Grid-based dot layout (7×7)", "4-fold symmetry", ...]
-}
-```
+| `GET` | `/api/health` | Health check + model status |
+| `POST` | `/api/analyze` | Analyze Kolam image (base64) |
+| `POST` | `/api/recreate` | Recreate by style + grid size |
+| `POST` | `/api/generate` | Generate new variations |
+| `GET` | `/api/dataset/stats` | Dataset statistics |
 
 ---
 
-## 🧠 Model & Dataset
+## 🛠️ Tech Stack
 
-| Property | Value |
-|----------|-------|
-| Dataset size | 5,631 images |
-| Categories | Dot Grid, Flower Motif, Geometric, Sikku Pattern, Spiral Design, Star Pattern |
-| Model | KolamNetV2 (Custom CNN + Attention) |
-| Accuracy | **99.5%** |
-| Framework | TensorFlow / PyTorch |
-| Train/Val/Test | 80% / 10% / 10% |
-
----
-
-## 🛠 Tech Stack
-
-**Backend:** Python · Flask · OpenCV · NumPy · Pillow · scikit-learn  
-**Frontend:** Vanilla HTML/CSS/JS (React-ready) · Cinzel & Raleway fonts  
-**ML:** TensorFlow · PyTorch · scikit-image  
-**DevOps:** Docker · GitHub Actions · AWS/Azure ready
-
----
-
-## 📸 Features
-
-- **Upload & Analyze** — Drag-drop any Kolam image → instant symmetry + pattern breakdown
-- **Recreate** — Choose style (Pulli/Sikku/Kambi), grid size, and color theme
-- **Generate** — AI produces 2–4 new Kolam variations
-- **Dataset Explorer** — Visual breakdown of training data stats
+| Layer | Technologies |
+|-------|-------------|
+| **ML Model** | TensorFlow 2.17, EfficientNetB3, Keras |
+| **Backend** | Python 3.11, Flask, OpenCV, NumPy, Pillow |
+| **Frontend** | HTML5, CSS3, Vanilla JS |
+| **Training** | Google Colab T4 GPU |
+| **DevOps** | Docker, GitHub |
 
 ---
 
 ## 🌏 Impact
 
-- **Cultural Preservation** — Digital archive of diverse Kolam traditions
-- **Education** — Teach geometry, symmetry, and Indian heritage interactively  
-- **Creative Tool** — Artists can experiment and generate new Kolams
-- **Atmanirbhar Bharat** — Indigenous cultural technology, made in India
-
----
-
-## 👥 Team Canvas Coders — SIH 2025
-
-_Problem Statement ID: 25107 · Theme: Heritage & Culture_
+- **Cultural Preservation** — Digitally archives diverse Kolam traditions
+- **Education** — Interactive tool to teach geometry, symmetry, and Indian heritage
+- **Creative Tool** — Artists can experiment and generate new Kolams digitally
+- **Research** — Foundation for computational analysis of traditional art forms
 
 ---
 
@@ -143,7 +158,16 @@ _Problem Statement ID: 25107 · Theme: Heritage & Culture_
 - [Kolam Simulation using Lattice Points — arXiv](https://arxiv.org/abs/2307.02144)
 - [Tamil Kolam Entropy Study — PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC10427318/)
 - [UNESCO AI & Cultural Heritage](https://ich.unesco.org/en/news/exploring-the-impact-of-artificial-intelligence-and-intangible-cultural-heritage-13536)
+- [Geometrical Beauty of Kolams](https://americankahani.com/lifestyle/kolams-the-geometrical-and-mathematical-beauty-of-traditional-indian-art/)
 
 ---
 
-> Made with 🪷 and late-night chai by Canvas Coders
+## 📦 Model Download
+
+The trained model file (`kolam_model.keras`, ~43MB) is too large for GitHub. Download it from the [Releases](https://github.com/Tanviiii17/KolamAI/releases/tag/v1.0) page and place it in the `backend/` folder.
+
+---
+
+<div align="center">
+Made with 🪷 for Indian Heritage & Culture
+</div>
