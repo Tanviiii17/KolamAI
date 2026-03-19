@@ -76,7 +76,6 @@ KolamAI/
 │   ├── Sikku_Pattern/
 │   ├── Spiral_Design/
 │   └── Star_Pattern/
-├── assets/                 # Demo GIF and screenshots
 ├── docker-compose.yml
 ├── .gitignore
 └── README.md
