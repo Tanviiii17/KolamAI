@@ -100,8 +100,8 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 ```
 
-### 3. Add the trained model
-Download `kolam_model.keras` from the [Releases](https://github.com/Tanviiii17/KolamAI/releases) page and place it in `backend/`.
+### 3. The trained model
+`kolam_model.keras` is already included in the `backend/` folder — no separate download needed.
 
 ### 4. Run the backend
 ```bash
