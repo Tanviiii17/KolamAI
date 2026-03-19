@@ -161,12 +161,6 @@ python -m http.server 3000
 
 ---
 
-## 📦 Model Download
-
-The trained model file (`kolam_model.keras`, ~43MB) is too large for GitHub. Download it from the [Releases](https://github.com/Tanviiii17/KolamAI/releases/tag/v1.0) page and place it in the `backend/` folder.
-
----
-
 <div align="center">
 Made with 🪷 for Indian Heritage & Culture
 </div>
