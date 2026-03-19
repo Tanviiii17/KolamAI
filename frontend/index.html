@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KolamAI — Canvas Coders · SIH 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Raleway:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+/* ── ROOT TOKENS ── */
+:root {
+  --ink: #0d0a1a;
+  --rice: #f5f0e8;
+  --turmeric: #e8a020;
+  --kumkum: #c0392b;
+  --peacock: #1a6b7a;
+  --lotus: #d4559a;
+  --gold: #f0c040;
+  --muted: rgba(245,240,232,0.15);
+  --card-bg: rgba(13,10,26,0.85);
+  --border: rgba(240,192,64,0.25);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Raleway', sans-serif;
+  background: var(--ink);
+  color: var(--rice);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── KOLAM BACKGROUND ── */
+.kolam-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,107,122,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(192,57,43,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 100% 50%, rgba(212,85,154,0.1) 0%, transparent 50%),
+    var(--ink);
+  pointer-events: none;
+}
+.kolam-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle 1px at 20% 20%, rgba(240,192,64,0.4) 0%, transparent 1px),
+    radial-gradient(circle 1px at 40% 40%, rgba(240,192,64,0.2) 0%, transparent 1px),
+    radial-gradient(circle 1px at 60% 20%, rgba(240,192,64,0.3) 0%, transparent 1px),
+    radial-gradient(circle 1px at 80% 60%, rgba(240,192,64,0.2) 0%, transparent 1px),
+    radial-gradient(circle 1px at 10% 70%, rgba(240,192,64,0.3) 0%, transparent 1px),
+    radial-gradient(circle 1px at 90% 30%, rgba(240,192,64,0.4) 0%, transparent 1px);
+  background-size: 100px 100px, 150px 150px, 80px 80px, 200px 200px, 120px 120px, 90px 90px;
+  animation: dotFloat 20s linear infinite;
+  opacity: 0.6;
+}
+@keyframes dotFloat { to { background-position: 100px 100px, -150px 150px, 80px -80px, -200px 200px, 120px -120px, -90px 90px; } }
+
+/* ── LAYOUT ── */
+.app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* ── HEADER ── */
+header {
+  padding: 40px 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo-area { display: flex; align-items: center; gap: 16px; }
+.kolam-icon {
+  width: 52px; height: 52px;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  background: radial-gradient(circle, rgba(240,192,64,0.15), transparent);
+  animation: spin 20s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.logo-text h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--turmeric), var(--lotus));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+.logo-text p { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(245,240,232,0.5); margin-top: 2px; }
+
+/* ── HERO ── */
+.hero {
+  text-align: center; padding: 60px 0 48px;
+}
+.hero-tag {
+  display: inline-block;
+  border: 1px solid rgba(240,192,64,0.4);
+  padding: 6px 18px; border-radius: 20px;
+  font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 20px;
+  background: rgba(240,192,64,0.05);
+}
+.hero h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900; line-height: 1.15;
+  max-width: 700px; margin: 0 auto 20px;
+}
+.hero h2 .accent {
+  background: linear-gradient(135deg, var(--turmeric), var(--lotus));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p {
+  max-width: 520px; margin: 0 auto 40px;
+  font-size: 1rem; line-height: 1.7;
+  color: rgba(245,240,232,0.65); font-weight: 300;
+}
+.stats-row {
+  display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--turmeric));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,232,0.4); margin-top: 4px; }
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin: 48px 0;
+  opacity: 0.4;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); }
+.divider::after { background: linear-gradient(90deg, var(--gold), transparent); }
+.divider span { font-size: 18px; color: var(--gold); }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 4px; margin-bottom: 32px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; }
+.tab {
+  flex: 1; padding: 12px 8px;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Raleway', sans-serif; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: rgba(245,240,232,0.5);
+  border-radius: 8px; transition: all 0.3s;
+}
+.tab:hover { color: var(--rice); background: rgba(255,255,255,0.05); }
+.tab.active {
+  background: linear-gradient(135deg, rgba(240,192,64,0.2), rgba(212,85,154,0.15));
+  color: var(--gold);
+  border: 1px solid rgba(240,192,64,0.3);
+}
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; animation: fadeUp 0.4s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  backdrop-filter: blur(20px);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute;
+  top: -1px; left: 20%; right: 20%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone {
+  border: 2px dashed rgba(240,192,64,0.3);
+  border-radius: 16px;
+  padding: 60px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: rgba(240,192,64,0.03);
+  position: relative; overflow: hidden;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--gold);
+  background: rgba(240,192,64,0.08);
+  transform: scale(1.01);
+}
+.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.upload-icon { font-size: 48px; margin-bottom: 16px; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+.upload-zone h3 {
+  font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 8px; color: var(--rice);
+}
+.upload-zone p { font-size: 0.8rem; color: rgba(245,240,232,0.4); }
+
+/* ── PREVIEW ── */
+.image-preview {
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+  aspect-ratio: 1; max-width: 320px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.03);
+  position: relative;
+}
+.image-preview img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.image-placeholder { color: rgba(245,240,232,0.2); font-size: 48px; }
+
+/* ── RESULTS GRID ── */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px; margin-top: 24px;
+}
+.result-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+  transition: transform 0.2s;
+}
+.result-card:hover { transform: translateY(-3px); }
+.result-card h4 {
+  font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 10px;
+}
+.result-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--rice), rgba(245,240,232,0.7));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.result-sub { font-size: 0.75rem; color: rgba(245,240,232,0.4); margin-top: 4px; }
+
+/* ── SYMMETRY BAR ── */
+.sym-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.sym-label { font-size: 0.75rem; width: 90px; color: rgba(245,240,232,0.6); }
+.sym-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+.sym-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--peacock), var(--gold)); transition: width 1s ease; }
+.sym-pct { font-size: 0.75rem; width: 40px; text-align: right; color: var(--gold); }
+
+/* ── PRINCIPLES LIST ── */
+.principles-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.principles-list li {
+  padding: 12px 16px;
+  background: rgba(240,192,64,0.06);
+  border-left: 3px solid var(--turmeric);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.85rem;
+  color: rgba(245,240,232,0.85);
+}
+
+/* ── GENERATED GRID ── */
+.gen-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.gen-item {
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative; cursor: pointer;
+  transition: all 0.3s;
+  background: rgba(255,255,255,0.03);
+}
+.gen-item:hover { border-color: var(--gold); transform: scale(1.02); }
+.gen-item img { width: 100%; display: block; }
+.gen-item .gen-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 8px 12px;
+  background: linear-gradient(transparent, rgba(13,10,26,0.9));
+  font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ── CONTROLS ── */
+.controls-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.control-group { flex: 1; min-width: 160px; }
+.control-group label {
+  display: block; font-size: 0.65rem; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(245,240,232,0.5); margin-bottom: 8px;
+}
+.control-group select, .control-group input[type="range"] {
+  width: 100%;
+}
+select {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--rice);
+  padding: 10px 14px; border-radius: 8px;
+  font-family: 'Raleway', sans-serif; font-size: 0.85rem;
+  cursor: pointer; outline: none;
+}
+select:focus { border-color: var(--gold); }
+input[type="range"] {
+  -webkit-appearance: none; height: 4px;
+  background: rgba(255,255,255,0.1); border-radius: 2px; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px;
+  background: var(--gold); border-radius: 50%;
+}
+.range-val {
+  display: inline-block; margin-left: 8px;
+  font-size: 0.75rem; color: var(--gold);
+}
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 14px 32px; border-radius: 10px; cursor: pointer;
+  font-family: 'Raleway', sans-serif; font-size: 0.85rem;
+  font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  border: none; transition: all 0.3s; display: inline-flex;
+  align-items: center; gap: 8px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--turmeric), var(--kumkum));
+  color: white;
+  box-shadow: 0 4px 20px rgba(232,160,32,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(232,160,32,0.4); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-secondary {
+  background: rgba(240,192,64,0.1);
+  color: var(--gold); border: 1px solid rgba(240,192,64,0.3);
+}
+.btn-secondary:hover { background: rgba(240,192,64,0.2); }
+
+/* ── LOADER ── */
+.loader {
+  display: none; text-align: center; padding: 40px;
+}
+.loader.active { display: block; }
+.spinner {
+  width: 48px; height: 48px;
+  border: 3px solid rgba(240,192,64,0.15);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+.loader p { font-size: 0.8rem; color: rgba(245,240,232,0.4); letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── DATASET PANEL ── */
+.dataset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px; margin-top: 24px;
+}
+.ds-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px; text-align: center;
+}
+.ds-icon { font-size: 32px; margin-bottom: 10px; }
+.ds-num {
+  font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--lotus));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.ds-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,240,232,0.4); margin-top: 4px; }
+.ds-bar { height: 4px; border-radius: 2px; margin-top: 12px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 32px; right: 32px;
+  background: rgba(13,10,26,0.95); border: 1px solid rgba(240,192,64,0.4);
+  padding: 16px 24px; border-radius: 12px;
+  font-size: 0.85rem; backdrop-filter: blur(20px);
+  transform: translateY(80px); opacity: 0; transition: all 0.4s;
+  z-index: 1000;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(80,220,140,0.5); color: #50dc8c; }
+.toast.error { border-color: rgba(255,80,80,0.5); color: #ff8080; }
+
+/* ── 2-COL LAYOUT ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } .gen-grid { grid-template-columns: 1fr; } }
+
+/* ── PATTERN TYPE BADGE ── */
+.pattern-badge {
+  display: inline-block;
+  padding: 8px 20px; border-radius: 20px;
+  background: linear-gradient(135deg, rgba(212,85,154,0.2), rgba(26,107,122,0.2));
+  border: 1px solid rgba(212,85,154,0.4);
+  font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600;
+  color: var(--lotus); margin-bottom: 16px;
+}
+
+/* ── EDGE VIZ ── */
+.edge-preview {
+  border-radius: 8px; overflow: hidden;
+  border: 1px solid var(--border);
+  margin-top: 12px;
+}
+.edge-preview img { width: 100%; display: block; }
+</style>
+</head>
+<body>
+<div class="kolam-bg"></div>
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-area">
+      <div class="kolam-icon">✦</div>
+      <div class="logo-text">
+        <h1>KolamAI</h1>
+        <p>Heritage & Culture · AI-Powered</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">Heritage &amp; Culture · AI-Powered</div>
+    <h2>Decode the <span class="accent">Sacred Geometry</span> of Kolam</h2>
+    <p>Upload any Kolam image. Our AI identifies symmetry, dot grids, and design principles—then recreates and generates new patterns from a curated dataset of Kolam artworks.</p>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">5,631</div><div class="stat-label">Training Images</div></div>
+      <div class="stat"><div class="stat-num">6</div><div class="stat-label">Pattern Classes</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Generations</div></div>
+    </div>
+  </section>
+
+  <div class="divider"><span>✦</span></div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('analyze')">🔍 Analyze</button>
+    <button class="tab" onclick="switchTab('recreate')">🎨 Recreate</button>
+    <button class="tab" onclick="switchTab('generate')">✨ Generate</button>
+    <button class="tab" onclick="switchTab('dataset')">📦 Dataset</button>
+  </div>
+
+  <!-- ════════════════ ANALYZE PANEL ════════════════ -->
+  <div id="panel-analyze" class="panel active">
+    <div class="two-col">
+      <div class="card">
+        <h3 style="font-family:'Cinzel',serif;font-size:1rem;margin-bottom:20px;color:var(--gold)">Upload Kolam Image</h3>
+        <div class="upload-zone" id="dropzone"
+          ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+          <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)">
+          <div class="upload-icon">🪷</div>
+          <h3>Drop your Kolam here</h3>
+          <p>PNG, JPG, WEBP · Up to 10MB</p>
+        </div>
+        <div style="margin-top:20px">
+          <div class="image-preview" id="preview-box">
+            <div class="image-placeholder">🎨</div>
+          </div>
+        </div>
+        <div style="margin-top:20px;text-align:center">
+          <button class="btn btn-primary" id="analyze-btn" onclick="runAnalysis()" disabled>
+            <span>🔍</span> Analyze Kolam
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="results-card">
+        <h3 style="font-family:'Cinzel',serif;font-size:1rem;margin-bottom:20px;color:var(--gold)">Analysis Results</h3>
+
+        <div class="loader" id="analyze-loader">
+          <div class="spinner"></div>
+          <p>Analyzing patterns...</p>
+        </div>
+
+        <div id="results-content" style="display:none">
+          <div id="pattern-badge-area"></div>
+
+          <h4 style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.5);margin-bottom:12px">Symmetry Analysis</h4>
+          <div id="sym-bars"></div>
+
+          <div class="results-grid" id="results-numbers"></div>
+
+          <div style="margin-top:20px">
+            <h4 style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.5);margin-bottom:12px">Design Principles</h4>
+            <ul class="principles-list" id="principles-list"></ul>
+          </div>
+
+          <div id="edge-section" style="margin-top:16px;display:none">
+            <h4 style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.5);margin-bottom:8px">Edge Detection</h4>
+            <div class="edge-preview"><img id="edge-img" src="" alt="Edge Detection"></div>
+          </div>
+
+          <div style="margin-top:20px;text-align:center">
+            <button class="btn btn-secondary" onclick="autoGenerate()">✨ Generate Variations</button>
+          </div>
+        </div>
+
+        <div id="results-placeholder" style="text-align:center;padding:60px 20px;color:rgba(245,240,232,0.2)">
+          <div style="font-size:48px;margin-bottom:12px">🔎</div>
+          <p style="font-size:0.85rem">Upload a Kolam image to see the analysis</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ RECREATE PANEL ════════════════ -->
+  <div id="panel-recreate" class="panel">
+    <div class="two-col">
+      <div class="card">
+        <h3 style="font-family:'Cinzel',serif;font-size:1rem;margin-bottom:24px;color:var(--gold)">Recreate Settings</h3>
+        <div class="controls-row">
+          <div class="control-group">
+            <label>Kolam Style</label>
+            <select id="rec-style">
+              <option value="pulli">Pulli Kolam</option>
+              <option value="sikku">Sikku Kolam</option>
+              <option value="kambi">Kambi Kolam</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Color Theme</label>
+            <select id="rec-color">
+              <option value="classic">Classic (Gold)</option>
+              <option value="colored">Vibrant (Neon)</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-group" style="margin-bottom:24px">
+          <label>Grid Size: <span class="range-val" id="grid-val">7</span></label>
+          <input type="range" id="rec-grid" min="3" max="13" step="2" value="7"
+            oninput="document.getElementById('grid-val').textContent=this.value">
+        </div>
+        <button class="btn btn-primary" onclick="runRecreate()" style="width:100%;justify-content:center">
+          🎨 Recreate Kolam
+        </button>
+
+        <div style="margin-top:24px">
+          <h4 style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-bottom:12px">Style Guide</h4>
+          <ul class="principles-list">
+            <li><strong>Pulli / Dot Grid</strong> — Dot-lattice based, lines weave between dots</li>
+            <li><strong>Sikku Pattern</strong> — Interlocking loops, high complexity</li>
+            <li><strong>Flower / Spiral</strong> — Curved petal and spiral motifs</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-family:'Cinzel',serif;font-size:1rem;margin-bottom:20px;color:var(--gold)">Generated Output</h3>
+        <div class="loader" id="recreate-loader">
+          <div class="spinner"></div>
+          <p>Drawing patterns...</p>
+        </div>
+        <div id="recreate-result" style="display:none">
+          <div class="image-preview" style="max-width:100%;aspect-ratio:1">
+            <img id="recreate-img" src="" alt="Recreated Kolam">
+          </div>
+          <div style="text-align:center;margin-top:16px">
+            <button class="btn btn-secondary" onclick="downloadImg('recreate-img','kolam-recreated.png')">
+              ⬇️ Download
+            </button>
+          </div>
+        </div>
+        <div id="recreate-placeholder" style="text-align:center;padding:80px 20px;color:rgba(245,240,232,0.2)">
+          <div style="font-size:56px;margin-bottom:12px">🪷</div>
+          <p>Configure settings and click Recreate</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ GENERATE PANEL ════════════════ -->
+  <div id="panel-generate" class="panel">
+    <div class="card" style="margin-bottom:24px">
+      <h3 style="font-family:'Cinzel',serif;font-size:1rem;margin-bottom:24px;color:var(--gold)">Generate New Kolam Variations</h3>
+      <div class="controls-row">
+        <div class="control-group">
+          <label>Base Pattern</label>
+          <select id="gen-style">
+            <option value="Dot_Grid">Dot Grid</option>
+            <option value="Flower_Motif">Flower Motif</option>
+            <option value="Geometric">Geometric</option>
+            <option value="Sikku_Pattern">Sikku Pattern</option>
+            <option value="Spiral_Design">Spiral Design</option>
+            <option value="Star_Pattern">Star Pattern</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Base Grid: <span class="range-val" id="gen-grid-val">7</span></label>
+          <input type="range" id="gen-grid" min="3" max="13" step="2" value="7"
+            oninput="document.getElementById('gen-grid-val').textContent=this.value">
+        </div>
+        <div class="control-group">
+          <label>Variations</label>
+          <select id="gen-count">
+            <option value="2">2 Variations</option>
+            <option value="4" selected>4 Variations</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="runGenerate()">✨ Generate Variations</button>
+    </div>
+
+    <div class="loader" id="generate-loader">
+      <div class="spinner"></div>
+      <p>Generating patterns...</p>
+    </div>
+
+    <div id="gen-result" style="display:none">
+      <div class="gen-grid" id="gen-grid-display"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ DATASET PANEL ════════════════ -->
+  <div id="panel-dataset" class="panel">
+
+    <div class="dataset-grid" id="ds-grid">
+      <div class="ds-card">
+        <div class="ds-icon">🪷</div>
+        <div class="ds-num">5,631</div>
+        <div class="ds-label">Total Images</div>
+        <div class="ds-bar" style="background:linear-gradient(90deg,var(--kumkum),var(--turmeric))"></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-icon">⚫</div>
+        <div class="ds-num">1,000</div>
+        <div class="ds-label">Dot Grid</div>
+        <div class="ds-bar" style="background:linear-gradient(90deg,#888,#ccc)"></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-icon">🌸</div>
+        <div class="ds-num">1,021</div>
+        <div class="ds-label">Flower Motif</div>
+        <div class="ds-bar" style="background:linear-gradient(90deg,var(--lotus),#ff88dd)"></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-icon">🔷</div>
+        <div class="ds-num">1,010</div>
+        <div class="ds-label">Geometric</div>
+        <div class="ds-bar" style="background:linear-gradient(90deg,var(--peacock),#4af)"></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-icon">〰️</div>
+        <div class="ds-num">600</div>
+        <div class="ds-label">Sikku Pattern</div>
+        <div class="ds-bar" style="background:linear-gradient(90deg,#4488ff,var(--lotus))"></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-icon">🌀</div>
+        <div class="ds-num">1,000</div>
+        <div class="ds-label">Spiral Design</div>
+        <div class="ds-bar" style="background:linear-gradient(90deg,var(--turmeric),var(--gold))"></div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-icon">⭐</div>
+        <div class="ds-num">1,000</div>
+        <div class="ds-label">Star Pattern</div>
+        <div class="ds-bar" style="background:linear-gradient(90deg,var(--kumkum),var(--turmeric))"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px">
+      <h4 style="font-family:'Cinzel',serif;font-size:0.9rem;color:var(--gold);margin-bottom:20px">Model Architecture — KolamNetV2</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px">
+        <div class="result-card">
+          <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Base</div>
+          <div style="font-size:0.95rem;color:var(--rice)">Custom CNN</div>
+          <div class="result-sub">Attention-based deep learning</div>
+        </div>
+        <div class="result-card">
+          <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Augmentation</div>
+          <div style="font-size:0.85rem;color:var(--rice)">Rotation · Flip · Noise · Brightness</div>
+        </div>
+        <div class="result-card">
+          <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Split</div>
+          <div style="font-size:0.95rem;color:var(--rice)">80 / 10 / 10</div>
+          <div class="result-sub">Train · Val · Test</div>
+        </div>
+        <div class="result-card">
+          <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Framework</div>
+          <div style="font-size:0.95rem;color:var(--rice)">TensorFlow / PyTorch</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:5000/api';
+let uploadedImage = null;
+let lastAnalysis = null;
+
+// ── TAB SWITCHING ──
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── TOAST ──
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ── FILE HANDLING ──
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (file) loadImageFile(file);
+}
+function dragOver(e) { e.preventDefault(); document.getElementById('dropzone').classList.add('drag-over'); }
+function dragLeave(e) { document.getElementById('dropzone').classList.remove('drag-over'); }
+function dropFile(e) {
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) loadImageFile(file);
+}
+function loadImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    uploadedImage = ev.target.result;
+    const box = document.getElementById('preview-box');
+    box.innerHTML = `<img src="${uploadedImage}" alt="Preview">`;
+    document.getElementById('analyze-btn').disabled = false;
+    showToast('✅ Image loaded — ready to analyze');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── DOWNLOAD ──
+function downloadImg(imgId, filename) {
+  const img = document.getElementById(imgId);
+  const a = document.createElement('a');
+  a.href = img.src; a.download = filename; a.click();
+  showToast('⬇️ Downloading...');
+}
+
+// ── ANALYZE ──
+async function runAnalysis() {
+  if (!uploadedImage) return;
+  document.getElementById('analyze-loader').classList.add('active');
+  document.getElementById('results-content').style.display = 'none';
+  document.getElementById('results-placeholder').style.display = 'none';
+
+  try {
+    const res = await fetch(`${API}/analyze`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({image: uploadedImage})
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    lastAnalysis = data;
+    renderAnalysis(data);
+    showToast('✅ Analysis complete!');
+  } catch(e) {
+    showToast('❌ Backend unreachable. Showing demo results.', 'error');
+    renderAnalysis(getDemoAnalysis());
+  } finally {
+    document.getElementById('analyze-loader').classList.remove('active');
+  }
+}
+
+function getDemoAnalysis() {
+  return {
+    success: true,
+    pattern_type: "Pulli Kolam",
+    description: "Traditional dot-based kolam with high symmetry",
+    symmetry: { horizontal: 87.3, vertical: 91.2, rotational: 83.5, overall: 87.3 },
+    dot_count: 49, line_count: 38, complexity_score: 42.7, inferred_grid: 7,
+    edge_visualization: null,
+    design_principles: [
+      "Grid-based dot layout (7×7)",
+      "Symmetry type: 4-fold",
+      "Line-loop threading pattern",
+      "Pattern complexity: Medium"
+    ]
+  };
+}
+
+function renderAnalysis(data) {
+  // Pattern badge
+  document.getElementById('pattern-badge-area').innerHTML =
+    `<div class="pattern-badge">${data.pattern_type}</div>
+     <p style="font-size:0.8rem;color:rgba(245,240,232,0.55);margin-bottom:20px">${data.description}</p>`;
+
+  // Symmetry bars
+  const sym = data.symmetry;
+  document.getElementById('sym-bars').innerHTML = ['horizontal','vertical','rotational','overall'].map(k => `
+    <div class="sym-row">
+      <span class="sym-label">${k.charAt(0).toUpperCase()+k.slice(1)}</span>
+      <div class="sym-bar"><div class="sym-fill" style="width:${sym[k]}%"></div></div>
+      <span class="sym-pct">${sym[k]}%</span>
+    </div>`).join('');
+
+  // Numbers
+  document.getElementById('results-numbers').innerHTML = `
+    <div class="result-card"><div class="result-card h4" style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Dots Detected</div>
+      <div class="result-value">${data.dot_count}</div><div class="result-sub">Lattice points</div></div>
+    <div class="result-card"><div class="result-card h4" style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Lines</div>
+      <div class="result-value">${data.line_count}</div><div class="result-sub">Segments found</div></div>
+    <div class="result-card"><div class="result-card h4" style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Complexity</div>
+      <div class="result-value">${data.complexity_score}</div><div class="result-sub">Laplacian variance</div></div>
+    <div class="result-card"><div class="result-card h4" style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Grid</div>
+      <div class="result-value">${data.inferred_grid}×${data.inferred_grid}</div><div class="result-sub">Inferred dot grid</div></div>`;
+
+  // Principles
+  document.getElementById('principles-list').innerHTML =
+    data.design_principles.map(p => `<li>${p}</li>`).join('');
+
+  // Edge
+  if (data.edge_visualization) {
+    document.getElementById('edge-img').src = data.edge_visualization;
+    document.getElementById('edge-section').style.display = 'block';
+  }
+
+  document.getElementById('results-content').style.display = 'block';
+}
+
+// ── AUTO GENERATE (from analyze) ──
+function autoGenerate() {
+  if (!lastAnalysis) return;
+  switchTab('generate');
+  document.querySelectorAll('.tab')[2].classList.add('active');
+  document.querySelectorAll('.tab').forEach((t,i)=>{ if(i!==2) t.classList.remove('active'); });
+  document.getElementById('gen-style').value = lastAnalysis.pattern_type;
+  document.getElementById('gen-grid').value = lastAnalysis.inferred_grid;
+  document.getElementById('gen-grid-val').textContent = lastAnalysis.inferred_grid;
+  runGenerate();
+}
+
+// ── RECREATE ──
+async function runRecreate() {
+  const style = document.getElementById('rec-style').value;
+  const grid = document.getElementById('rec-grid').value;
+  const color_style = document.getElementById('rec-color').value;
+
+  document.getElementById('recreate-loader').classList.add('active');
+  document.getElementById('recreate-result').style.display = 'none';
+  document.getElementById('recreate-placeholder').style.display = 'none';
+
+  try {
+    const res = await fetch(`${API}/recreate`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({style, grid: parseInt(grid), color_style})
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    document.getElementById('recreate-img').src = data.image;
+    document.getElementById('recreate-result').style.display = 'block';
+    showToast('✅ Kolam recreated!');
+  } catch(e) {
+    showToast('❌ Backend offline — connect Flask server', 'error');
+    document.getElementById('recreate-placeholder').style.display = 'block';
+  } finally {
+    document.getElementById('recreate-loader').classList.remove('active');
+  }
+}
+
+// ── GENERATE ──
+async function runGenerate() {
+  const style = document.getElementById('gen-style').value;
+  const grid = parseInt(document.getElementById('gen-grid').value);
+  const variations = parseInt(document.getElementById('gen-count').value);
+
+  document.getElementById('generate-loader').classList.add('active');
+  document.getElementById('gen-result').style.display = 'none';
+
+  try {
+    const res = await fetch(`${API}/generate`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({pattern_type: style, grid, variations})
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+    const container = document.getElementById('gen-grid-display');
+    container.innerHTML = data.variations.map((v,i) => `
+      <div class="gen-item" onclick="openFull('${v.image}')">
+        <img src="${v.image}" alt="Variation ${v.variant}">
+        <div class="gen-label">Variant ${v.variant} · ${v.grid}×${v.grid} grid</div>
+      </div>`).join('');
+    document.getElementById('gen-result').style.display = 'block';
+    showToast(`✅ ${variations} variations generated!`);
+  } catch(e) {
+    showToast('❌ Backend offline — start Flask server', 'error');
+  } finally {
+    document.getElementById('generate-loader').classList.remove('active');
+  }
+}
+
+function openFull(src) {
+  const w = window.open('', '_blank');
+  w.document.write(`<html><body style="margin:0;background:#000"><img src="${src}" style="max-width:100vw;max-height:100vh;display:block;margin:auto"></body></html>`);
+}
+</script>
+</body>
+</html>

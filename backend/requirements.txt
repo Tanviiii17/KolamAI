@@ -1,0 +1,12 @@
+flask==3.0.0
+flask-cors==4.0.0
+numpy==1.26.4
+opencv-python-headless==4.9.0.80
+Pillow==10.2.0
+scikit-learn==1.4.0
+scikit-image==0.22.0
+
+# Training dependencies
+tensorflow==2.15.0
+matplotlib==3.8.2
+seaborn==0.13.2
