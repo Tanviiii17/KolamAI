@@ -22,7 +22,7 @@ CORS(app)
 # LOAD TRAINED MODEL (once at startup)
 # ─────────────────────────────────────────────
 MODEL_PATH = "kolam_model.keras"
-IMG_SIZE   = 224
+IMG_SIZE   = 300
 
 CLASSES = [
     "Dot_Grid",
