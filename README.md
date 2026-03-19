@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/kolam_demo.gif" alt="KolamAI Demo" width="100%">
+<img src="demo_kolam.gif" alt="KolamAI Demo" width="100%">
 
 # 🪷 KolamAI
 
@@ -31,8 +31,8 @@ Kolam is a sacred South Indian art form — intricate patterns drawn using rice 
 ## 📸 Screenshots
 
 <div align="center">
-<img src="assets/SS_1.jpeg" width="49%"> <img src="assets/SS_2.jpeg" width="49%">
-<img src="assets/SS_3.jpeg" width="49%"> <img src="assets/SS_4.jpeg" width="49%">
+<img src="SS_1.jpeg" width="49%"> <img src="SS_2.jpeg" width="49%">
+<img src="SS_3.jpeg" width="49%"> <img src="SS_4.jpeg" width="49%">
 </div>
 
 ---
